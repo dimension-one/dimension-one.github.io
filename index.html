@@ -1,0 +1,26 @@
+---
+layout: default
+title: home
+---
+<main class="container">
+  <header class="site-header">
+    <h1>dimension one</h1>
+    <p class="tagline">let's do it in dimension one.</p>
+  </header>
+
+  <ul class="post-list">
+    {% for post in site.posts %}
+    <li class="card">
+      <a class="post-link" href="{{ post.url | relative_url }}">
+        <h2>{{ post.title }}</h2>
+        <p class="meta">{{ post.date | date: "%b %Y" }}</p>
+        {% if post.summary %}<p class="summary">{{ post.summary }}</p>{% endif %}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  <footer class="site-footer">
+  <p><a href="{{ '/about' | relative_url }}">about</a></p>
+  <p class="easteregg"></p>
+</footer>
+</main>

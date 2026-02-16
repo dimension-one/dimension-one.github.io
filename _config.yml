@@ -1,0 +1,11 @@
+title: "dimension one"
+description: "notes on machine learning, in one dimension"
+url: "https://dimension-one.github.io"
+markdown: kramdown
+theme: null # using custom theme in assets/css/style.css instead
+permalink: /:categories/:year-:month-:day-:slug/
+plugins: []
+
+
+kramdown:
+  input: GFM

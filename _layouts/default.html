@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title }} · {{ site.title }}</title>
+  <meta name="description" content="{{ page.summary | default: site.description }}">
+  <link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/contrib/auto-render.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const root = document.querySelector("article.post") || document.body;
+
+  renderMathInElement(root, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "$", right: "$", display: false },
+    ],
+    throwOnError: false,
+    macros: {
+      "\\R": "\\mathbb{R}",
+      "\\E": "\\mathbb{E}",
+      "\\P": "\\mathbb{P}", // https://katex.org/docs/options
+    },
+
+    ignoredClasses: ["katex", "katex-display", "katex-html", "katex-mathml"],
+    ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+  });
+});
+</script>
+
+
+
+</head>
+<body>
+  {{ content }}
+  <script>
+  document.addEventListener("DOMContentLoaded", function(){
+    const footnotes = [
+      "dimension one only. higher dimensions sold separately.",
+      "side effects of dimension one may include insight, confusion, or both.",
+      "results may vary. consult higher dimensions if unsure.",
+    ];
+    const pick = footnotes[Math.floor(Math.random() * footnotes.length)];
+    const el = document.querySelector(".easteregg");
+    if(el) el.textContent = "*" + pick + "*";
+  });
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("pre > code").forEach((code) => {
+    const pre = code.parentElement;
+    const btn = document.createElement("button");
+    btn.textContent = "copy";
+    btn.className = "copy-btn";
+    btn.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(code.innerText);
+      const t = btn.textContent; btn.textContent = "copied ✓";
+      setTimeout(() => btn.textContent = t, 1000);
+    });
+    pre.style.position = "relative";
+    pre.appendChild(btn);
+  });
+});
+</script>
+<style>
+.copy-btn{
+  position:absolute; top:8px; right:8px;
+  font-size:.75rem; padding:4px 8px;
+  border:1px solid rgba(255,255,255,.3);
+  border-radius:10px; background:rgba(255,255,255,.6);
+  backdrop-filter:saturate(180%) blur(10px);
+  -webkit-backdrop-filter:saturate(180%) blur(10px);
+  cursor:pointer; opacity:.7;
+}
+.copy-btn:hover{opacity:1}
+@media (prefers-color-scheme: dark){
+  .copy-btn{ background: rgba(34,34,38,.6); color: #eee; }
+}
+</style>
+</body>
+</html>

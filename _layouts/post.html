@@ -1,0 +1,18 @@
+---
+layout: default
+---
+<main class="container">
+  <article class="card post">
+    <p class="home-link">
+      <a href="{{ '/' | relative_url }}">← home</a>
+    </p>
+
+    <h1>{{ page.title }}</h1>
+    <p class="meta">{{ page.date | date: "%B %d, %Y" }}</p>
+    {{ content }}
+  </article>
+  <nav class="post-nav">
+    {% if page.previous %}<a href="{{ page.previous.url | relative_url }}">← {{ page.previous.title }}</a>{% endif %}
+    {% if page.next %}<a href="{{ page.next.url | relative_url }}">{{ page.next.title }} →</a>{% endif %}
+  </nav>
+</main>

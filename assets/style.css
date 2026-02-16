@@ -1,0 +1,219 @@
+:root{
+  --bg1: 245,245,247;
+  --fg: 20,20,22;
+  --card: 255,255,255;
+  --alpha: .6;
+  --radius: 24px;
+  --maxw: 780px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg1: 14,14,16;
+    --fg: 232,232,236;
+    --card: 34,34,38;
+    --alpha: .55;
+  }
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font:16px/1.6 -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  color:rgb(var(--fg));
+  background:
+    radial-gradient(1200px 800px at 10% -10%, rgba(120,120,255,.08), transparent 60%),
+    radial-gradient(1200px 800px at 110% 10%, rgba(255,120,200,.08), transparent 60%),
+    rgb(var(--bg1));
+}
+.container{
+  max-width:var(--maxw);
+  margin:60px auto;
+  padding:0 16px;
+}
+.site-header{margin-bottom:32px; text-align:center}
+.site-header h1{margin:0 0 4px 0; font-weight:600; font-size:1.8rem}
+.tagline{margin:0; opacity:.75}
+.footnote{margin-top:8px; font-size:.8rem; opacity:.55; max-width:500px; margin-left:auto; margin-right:auto}
+
+.post-list{list-style:none; padding:0; margin:24px 0}
+.card{
+  background:rgba(var(--card),var(--alpha));
+  backdrop-filter:saturate(180%) blur(22px);
+  -webkit-backdrop-filter:saturate(180%) blur(22px);
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:var(--radius);
+  box-shadow:0 12px 40px rgba(0,0,0,.08);
+  padding:20px 22px;
+  margin:18px 0;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.card:hover{
+  transform:translateY(-3px) scale(1.01);
+  box-shadow:0 16px 45px rgba(0,0,0,.12);
+}
+.post-link{text-decoration:none; color:inherit; display:block}
+.card h2{margin:0 0 4px 0; font-size:1.2rem}
+.meta{margin:0; opacity:.55; font-size:.9rem}
+.summary{margin:6px 0 0 0}
+
+.post h1{margin:0 0 8px 0}
+.post img, .post canvas, .post svg {max-width:100%; height:auto; display:block; margin:12px auto}
+
+
+.post pre, .post code{
+  font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size:.95rem;
+}
+.post pre{
+  background:rgba(0,0,0,.06);
+  border-radius:12px;
+  padding:12px;
+  overflow:auto;
+}
+@media (prefers-color-scheme: dark){
+  .post pre{background:rgba(255,255,255,.06)}
+}
+.post-nav{display:flex; justify-content:space-between; margin:20px 0}
+.site-footer{margin:30px 0; opacity:.6; text-align:center}
+a{color:inherit; text-decoration-color:rgba(120,120,255,.5)}
+a:hover{text-decoration-color:rgba(120,120,255,.9)}
+
+.easteregg {
+  font-size: .75rem;
+  opacity: .4;
+  margin-top: 20px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.4;
+}
+.easteregg:hover {
+  opacity: .7;
+  transition: opacity .2s ease;
+}
+
+
+
+/* default: non-sticky */
+.site-header { position: static; }
+
+/* desktop: sticky glass header */
+@media (min-width: 768px){
+  .site-header{
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    margin-bottom: 24px;
+    padding: 10px 12px 14px;
+    background: rgba(var(--card), var(--alpha));
+    backdrop-filter: saturate(180%) blur(18px);
+    -webkit-backdrop-filter: saturate(180%) blur(18px);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 20px;
+  }
+  /* tuck the container so the sticky header doesn’t feel cramped */
+  .container{ margin-top: 40px; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* expandable details in posts — clearer affordance + clearer expanded region */
+details.details{
+  background: rgba(var(--card), var(--alpha));
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 16px;
+  margin: 14px 0;
+  overflow: clip; /* keeps inner panel rounded */
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+}
+
+/* clickable header row */
+details.details > summary{
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 12px 14px;
+  font-weight: 600;
+  opacity: .92;
+
+  /* make it feel like a control */
+  background: rgba(255,255,255,.06);
+  transition: background .15s ease, opacity .15s ease;
+}
+
+@media (prefers-color-scheme: dark){
+  details.details > summary{ background: rgba(255,255,255,.04); }
+}
+
+/* remove default marker */
+details.details > summary::-webkit-details-marker{ display:none; }
+
+/* left-side label + optional hint */
+details.details > summary .hint{
+  font-weight: 500;
+  font-size: .9rem;
+  opacity: .6;
+}
+
+/* right-side chevron */
+details.details > summary::after{
+  content: "▸";
+  flex: 0 0 auto;
+  opacity: .75;
+  transform: translateY(-1px);
+  transition: transform .15s ease;
+}
+
+details.details[open] > summary::after{
+  transform: rotate(90deg) translateY(-1px);
+}
+
+/* hover + focus = “this is clickable” */
+details.details > summary:hover{
+  background: rgba(120,120,255,.10);
+  opacity: 1;
+}
+
+details.details > summary:focus-visible{
+  outline: 2px solid rgba(120,120,255,.55);
+  outline-offset: -2px;
+}
+
+/* the expanded area: visually separated */
+details.details > .details-body,
+details.details > *:not(summary){
+  padding: 12px 14px 14px;
+}
+
+/* turn the expanded content into a distinct panel */
+details.details[open] > *:not(summary){
+  border-top: 1px solid rgba(255,255,255,.16);
+  background: rgba(0,0,0,.035);
+}
+
+@media (prefers-color-scheme: dark){
+  details.details[open] > *:not(summary){
+    background: rgba(0,0,0,.18);
+    border-top-color: rgba(255,255,255,.12);
+  }
+}
