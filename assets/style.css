@@ -217,3 +217,29 @@ details.details[open] > *:not(summary){
     border-top-color: rgba(255,255,255,.12);
   }
 }
+
+
+.tldr{
+  background: rgba(var(--card), var(--alpha));
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin: 18px 0 26px 0;
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  font-size: .95rem;
+  line-height: 1.5;
+}
+
+.tldr strong{
+  display:block;
+  margin-bottom:6px;
+  font-weight:600;
+  letter-spacing:.02em;
+}
+
+@media (prefers-color-scheme: dark){
+  .tldr{
+    border-color: rgba(255,255,255,.16);
+  }
+}
