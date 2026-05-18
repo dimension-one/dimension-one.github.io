@@ -19,6 +19,55 @@
   };
 
   const PLOTLY_URL = "https://cdn.plot.ly/plotly-2.35.2.min.js";
+  const EXPLORER_STYLE_ID = "post-4-phase-explorer-style";
+
+  function ensureExplorerStyles() {
+    if (document.getElementById(EXPLORER_STYLE_ID)) {
+      return;
+    }
+
+    const style = document.createElement("style");
+    style.id = EXPLORER_STYLE_ID;
+    style.textContent = `
+      .phase-explorer{
+        box-sizing:border-box;
+        background:rgba(var(--card, 255,255,255), calc(var(--alpha, .72) * .9));
+        border:1px solid rgba(255,255,255,.18);
+        border-radius:16px;
+        padding:14px;
+        margin:4px 0;
+        max-width:100%;
+        overflow:hidden;
+      }
+      .phase-explorer *{box-sizing:border-box;}
+      .phase-explorer-loading,.phase-explorer-error{opacity:.75;font-size:.95rem;}
+      .phase-explorer-controls{display:grid;gap:10px;margin-bottom:12px;}
+      .phase-explorer-range-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+      .phase-explorer-range-row label{font-weight:600;white-space:nowrap;}
+      .phase-explorer-slider{flex:1 1 320px;min-width:180px;}
+      .phase-explorer-readout{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;font-size:.9rem;opacity:.85;}
+      .phase-explorer-ticks{display:flex;justify-content:space-between;gap:6px;font-size:.78rem;opacity:.62;overflow-x:auto;white-space:nowrap;}
+      .phase-explorer-ticks span{min-width:2.8rem;text-align:center;}
+      .phase-explorer-ticks span.current{opacity:1;font-weight:700;}
+      .phase-explorer-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start;}
+      .phase-explorer-plot{position:relative;display:block;width:100%;height:420px;min-height:420px;border-radius:14px;overflow:hidden;background:rgba(0,0,0,.04);}
+      .phase-explorer-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:12px 0 6px;font-size:.85rem;}
+      .phase-explorer-legend-item{display:inline-flex;align-items:center;gap:8px;}
+      .phase-explorer-swatch{width:12px;height:12px;border-radius:999px;border:1px solid rgba(0,0,0,.18);flex:0 0 auto;}
+      .phase-explorer-note,.phase-explorer-status{font-size:.9rem;opacity:.78;}
+      .phase-explorer-note{margin:8px 0 0;}
+      .phase-explorer-status{margin:8px 0 0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;}
+      @media (prefers-color-scheme:dark){
+        .phase-explorer{border-color:rgba(255,255,255,.14);}
+        .phase-explorer-plot{background:rgba(255,255,255,.04);}
+      }
+      @media (max-width:900px){
+        .phase-explorer-panels{grid-template-columns:1fr;}
+        .phase-explorer-plot{height:340px;min-height:340px;}
+      }
+    `;
+    document.head.appendChild(style);
+  }
 
   function ensurePlotly() {
     if (window.Plotly) {
@@ -61,6 +110,10 @@
 
   function loss(x, y) {
     return 0.5 * (1 - x * y) ** 2;
+  }
+
+  function displayedLoss(x, y) {
+    return Math.min(loss(x, y), 4);
   }
 
   function gdStep(x, y, eta) {
@@ -123,7 +176,7 @@
 
     const xs = [x];
     const ys = [y];
-    const zs = [Math.log1p(loss(x, y))];
+    const zs = [displayedLoss(x, y)];
 
     function pushForPlot(px, py) {
       if (clipped) {
@@ -135,7 +188,7 @@
       }
       xs.push(px);
       ys.push(py);
-      zs.push(Math.log1p(loss(px, py)));
+      zs.push(displayedLoss(px, py));
     }
 
     if (originHits >= settleWindow) {
@@ -194,7 +247,7 @@
 
   function buildSurface(min, max, size) {
     const grid = linspace(min, max, size);
-    const z = grid.map((y) => grid.map((x) => Math.log1p(loss(x, y))));
+    const z = grid.map((y) => grid.map((x) => displayedLoss(x, y)));
     return { grid, z };
   }
 
@@ -231,6 +284,7 @@
     if (root.dataset.initialized === "true") {
       return;
     }
+    ensureExplorerStyles();
     root.dataset.initialized = "true";
     root.innerHTML = '<div class="phase-explorer-loading">loading interactive explorer…</div>';
 
@@ -256,6 +310,11 @@
       const gridMax = Number(data.grid_max);
       const gridSize = Number(data.grid_size);
       const gridValues = linspace(gridMin, gridMax, gridSize);
+      const axisTickValues = Array.from(
+        { length: Math.round(gridMax - gridMin) + 1 },
+        (_, i) => gridMin + i
+      );
+      const axisTickText = axisTickValues.map((value) => String(value));
       const totalPoints = gridSize * gridSize;
       const hyperbola = buildHyperbola();
       const surface = buildSurface(gridMin, gridMax, 45);
@@ -275,7 +334,7 @@
           <div class="phase-explorer-plot"></div>
         </div>
         <div class="phase-explorer-legend"></div>
-        <p class="phase-explorer-note">The right panel shows the sampled ${gridSize}x${gridSize} grid with nearest-neighbor coloring. The left panel shows the trajectory on the surface of log(1 + L).</p>
+        <p class="phase-explorer-note">The right panel shows the sampled ${gridSize}x${gridSize} grid with nearest-neighbor coloring. The left panel shows the trajectory on the same loss surface, clipped at 4.</p>
         <p class="phase-explorer-status"></p>
       `;
 
@@ -286,6 +345,21 @@
       const rightPlot = root.querySelectorAll(".phase-explorer-plot")[1];
       const legend = root.querySelector(".phase-explorer-legend");
       const status = root.querySelector(".phase-explorer-status");
+
+      function resizePlots() {
+        if (!window.Plotly) {
+          return;
+        }
+        window.Plotly.Plots.resize(leftPlot);
+        window.Plotly.Plots.resize(rightPlot);
+      }
+
+      function queueResize() {
+        requestAnimationFrame(() => {
+          resizePlots();
+          setTimeout(resizePlots, 80);
+        });
+      }
 
       legend.innerHTML = [
         [0, LABEL_TEXT[0]],
@@ -357,7 +431,7 @@
       }
 
       function saddleTrace3d() {
-        const z = Math.log1p(loss(0, 0)) + 0.12;
+        const z = displayedLoss(0, 0) + 0.12;
         const radius = 0.16;
         return {
           type: "scatter3d",
@@ -395,7 +469,7 @@
           mode: "markers",
           x: [selected.x],
           y: [selected.y],
-          z: [Math.log1p(loss(selected.x, selected.y))],
+          z: [displayedLoss(selected.x, selected.y)],
           marker: {
             size: 6,
             color: "#ffffff",
@@ -494,11 +568,11 @@
       const leftLayout = {
         ...commonLayout,
         margin: { l: 0, r: 0, t: 38, b: 0 },
-        title: { text: "trajectory on log(1 + L(x, y))", x: 0.5, xanchor: "center", font: { size: 16 } },
+        title: { text: "trajectory on min(L(x, y), 4)", x: 0.5, xanchor: "center", font: { size: 16 } },
         scene: {
           xaxis: { title: "x", range: [gridMin, gridMax], gridcolor: "rgba(128,128,128,0.25)", zerolinecolor: "rgba(128,128,128,0.45)" },
           yaxis: { title: "y", range: [gridMin, gridMax], gridcolor: "rgba(128,128,128,0.25)", zerolinecolor: "rgba(128,128,128,0.45)" },
-          zaxis: { title: "log(1 + L)", range: [0, 4.05], gridcolor: "rgba(128,128,128,0.25)" },
+          zaxis: { title: "min(L, 4)", range: [0, 4.05], gridcolor: "rgba(128,128,128,0.25)" },
           aspectmode: "cube",
           camera: { eye: { x: -0.85, y: -0.85, z: 1.70 } },
         },
@@ -512,6 +586,9 @@
         xaxis: {
           title: "x",
           range: [gridMin, gridMax],
+          tickmode: "array",
+          tickvals: axisTickValues,
+          ticktext: axisTickText,
           scaleanchor: "y",
           scaleratio: 1,
           gridcolor: "rgba(128,128,128,0.20)",
@@ -520,6 +597,9 @@
         yaxis: {
           title: "y",
           range: [gridMin, gridMax],
+          tickmode: "array",
+          tickvals: axisTickValues,
+          ticktext: axisTickText,
           gridcolor: "rgba(128,128,128,0.20)",
           zerolinecolor: "rgba(128,128,128,0.45)",
         },
@@ -564,6 +644,8 @@
           rightLayout,
           { displayModeBar: false, responsive: true }
         );
+
+        queueResize();
       }
 
       slider.value = String(currentEtaIndex);
@@ -578,6 +660,8 @@
       ]);
 
       render();
+      queueResize();
+      window.addEventListener("resize", queueResize);
 
       if (typeof rightPlot.on === "function") {
         rightPlot.on("plotly_click", (event) => {
