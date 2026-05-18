@@ -243,3 +243,135 @@ details.details[open] > *:not(summary){
     border-color: rgba(255,255,255,.16);
   }
 }
+
+.phase-explorer{
+  background: rgba(var(--card), calc(var(--alpha) * 0.9));
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 16px;
+  padding: 14px;
+  margin: 4px 0;
+}
+
+.phase-explorer-loading,
+.phase-explorer-error{
+  opacity: .75;
+  font-size: .95rem;
+}
+
+.phase-explorer-controls{
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.phase-explorer-range-row{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.phase-explorer-range-row label{
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.phase-explorer-slider{
+  flex: 1 1 320px;
+}
+
+.phase-explorer-readout{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: .9rem;
+  opacity: .85;
+}
+
+.phase-explorer-ticks{
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: .78rem;
+  opacity: .62;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.phase-explorer-ticks span{
+  min-width: 2.8rem;
+  text-align: center;
+}
+
+.phase-explorer-ticks span.current{
+  opacity: 1;
+  font-weight: 700;
+}
+
+.phase-explorer-panels{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.phase-explorer-plot{
+  min-height: 420px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(0,0,0,.04);
+}
+
+.phase-explorer-legend{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: 12px 0 6px;
+  font-size: .85rem;
+}
+
+.phase-explorer-legend-item{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.phase-explorer-swatch{
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,.18);
+  flex: 0 0 auto;
+}
+
+.phase-explorer-note,
+.phase-explorer-status{
+  font-size: .9rem;
+  opacity: .78;
+}
+
+.phase-explorer-note{
+  margin: 8px 0 0;
+}
+
+.phase-explorer-status{
+  margin: 8px 0 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+@media (prefers-color-scheme: dark){
+  .phase-explorer{
+    border-color: rgba(255,255,255,.14);
+  }
+
+  .phase-explorer-plot{
+    background: rgba(255,255,255,.04);
+  }
+}
+
+@media (max-width: 900px){
+  .phase-explorer-panels{
+    grid-template-columns: 1fr;
+  }
+
+  .phase-explorer-plot{
+    min-height: 340px;
+  }
+}
