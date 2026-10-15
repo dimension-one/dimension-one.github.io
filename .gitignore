@@ -4,7 +4,8 @@ _site
 .jekyll-metadata
 vendor
 .DS_Store
-/_posts_draft
-/notebooks_draft
+/_drafts/
+/_draft_archive/
 
 
+__pycache__/
